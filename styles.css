@@ -1,7 +1,8 @@
 :root {
-  --bg-1: #fffaf7;
-  --bg-2: #f7fcff;
-  --bg-3: #faf7ff;
+  --bg-1: #fffaf8;
+  --bg-2: #f5fbff;
+  --bg-3: #f8f4ff;
+  --bg-4: #fffdf8;
   --panel: rgba(255, 255, 255, 0.72);
   --panel-border: rgba(80, 88, 112, 0.2);
   --text: #3f4b67;
@@ -23,7 +24,10 @@ body {
   overscroll-behavior: none;
   overflow: hidden;
   font-family: "Trebuchet MS", "Verdana", sans-serif;
-  background: linear-gradient(170deg, var(--bg-1) 0%, var(--bg-2) 52%, var(--bg-3) 100%);
+  background:
+    radial-gradient(130% 90% at 10% 0%, rgba(255, 239, 229, 0.45) 0%, rgba(255, 239, 229, 0) 62%),
+    radial-gradient(120% 85% at 100% 100%, rgba(231, 244, 255, 0.5) 0%, rgba(231, 244, 255, 0) 60%),
+    linear-gradient(170deg, var(--bg-1) 0%, var(--bg-2) 50%, var(--bg-3) 78%, var(--bg-4) 100%);
   color: var(--text);
 }
 
