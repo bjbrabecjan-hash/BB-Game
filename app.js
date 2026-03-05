@@ -65,6 +65,7 @@
 
   const BALLOON_COLORS = ["#ffd6e8", "#d9efff", "#ffe9bf", "#dff8d8", "#e8dcff"];
   const fullscreenSupported = Boolean(app.requestFullscreen || app.webkitRequestFullscreen);
+  const immersiveFallbackSupported = window.matchMedia("(pointer: coarse)").matches || window.matchMedia("(max-width: 920px)").matches;
   const pointerLockSupported = Boolean(app.requestPointerLock);
 
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -78,6 +79,7 @@
   let activityStartAt = null;
   let sessionEnded = false;
   let idleShown = false;
+  let immersiveMode = false;
 
   const objects = [];
 
@@ -169,6 +171,23 @@
     if (document.webkitExitFullscreen) {
       document.webkitExitFullscreen();
     }
+  }
+
+  function isScreenExpanded() {
+    return isAppFullscreen() || immersiveMode;
+  }
+
+  function enableImmersiveMode() {
+    immersiveMode = true;
+    app.classList.add("immersive-mode");
+    app.style.height = `${window.innerHeight}px`;
+    window.scrollTo(0, 1);
+  }
+
+  function disableImmersiveMode() {
+    immersiveMode = false;
+    app.classList.remove("immersive-mode");
+    app.style.height = "";
   }
 
   function playSoftPop(kind) {
@@ -316,10 +335,10 @@
     calmToggle.textContent = `Calm Mode: ${calmMode ? "On" : "Off"}`;
     calmToggle.setAttribute("aria-pressed", String(calmMode));
 
-    const inFullscreen = isAppFullscreen();
-    fullscreenToggle.textContent = `Fullscreen: ${inFullscreen ? "On" : "Off"}`;
-    fullscreenToggle.setAttribute("aria-pressed", String(inFullscreen));
-    fullscreenToggle.disabled = !fullscreenSupported;
+    const expanded = isScreenExpanded();
+    fullscreenToggle.textContent = `Fullscreen: ${expanded ? "On" : "Off"}`;
+    fullscreenToggle.setAttribute("aria-pressed", String(expanded));
+    fullscreenToggle.disabled = !fullscreenSupported && !immersiveFallbackSupported;
   }
 
   function setCalmMode(value, force = false) {
@@ -395,7 +414,7 @@
     if (
       !pointerLockSupported ||
       event.pointerType !== "mouse" ||
-      !isAppFullscreen() ||
+      !isScreenExpanded() ||
       document.pointerLockElement === app
     ) {
       return;
@@ -459,18 +478,32 @@
   });
 
   fullscreenToggle.addEventListener("click", async () => {
-    if (!fullscreenSupported) {
+    if (!fullscreenSupported && !immersiveFallbackSupported) {
       return;
     }
 
     try {
-      if (isAppFullscreen()) {
-        await exitFullscreen();
+      if (isScreenExpanded()) {
+        if (isAppFullscreen()) {
+          await exitFullscreen();
+        }
+        disableImmersiveMode();
       } else {
-        await enterFullscreen();
+        if (fullscreenSupported) {
+          await enterFullscreen();
+        }
+        if (!isAppFullscreen() && immersiveFallbackSupported) {
+          enableImmersiveMode();
+        }
       }
     } catch (_) {
-      // Browsers may block fullscreen transitions; keep UI stable.
+      if (immersiveFallbackSupported) {
+        if (isScreenExpanded()) {
+          disableImmersiveMode();
+        } else {
+          enableImmersiveMode();
+        }
+      }
     }
     syncToggles();
   });
@@ -518,6 +551,12 @@
 
   document.addEventListener("pointerlockchange", () => {
     app.classList.toggle("mouse-locked", document.pointerLockElement === app);
+  });
+
+  window.addEventListener("resize", () => {
+    if (immersiveMode) {
+      app.style.height = `${window.innerHeight}px`;
+    }
   });
 
   window.setInterval(() => {

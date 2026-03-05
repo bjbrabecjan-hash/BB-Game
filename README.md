@@ -79,6 +79,8 @@ In Fullscreen mode:
 - On mouse play, pointer lock is requested automatically to keep focus in the play area.
 - Browsers still allow system-level exit (for example `Esc`) for safety.
 - Fullscreen uses standard + Safari (`webkit`) APIs. On older iOS versions, element fullscreen can still be limited by browser policy.
+- On phones where element fullscreen is blocked, the app uses an immersive fallback mode from the same button.
+- For the most reliable true fullscreen on iPhone, open it from Home Screen (Add to Home Screen).
 
 ### Sound Profiles
 
