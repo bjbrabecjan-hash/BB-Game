@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f7f3ff" />
+    <title>Bubbles & Balloons</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main id="app" aria-label="Bubbles and balloons play area">
+      <div id="scene" aria-hidden="true"></div>
+
+      <section id="parent-panel" aria-label="Parent controls">
+        <p class="panel-label">Parent</p>
+
+        <button id="sound-toggle" class="control" type="button" aria-pressed="false">
+          Sound: Off
+        </button>
+
+        <button id="calm-toggle" class="control" type="button" aria-pressed="true">
+          Calm Mode: On
+        </button>
+
+        <button id="fullscreen-toggle" class="control" type="button" aria-pressed="false">
+          Fullscreen: Off
+        </button>
+
+        <button id="restart-btn" class="control hold-btn" type="button" aria-label="Restart session (hold for 2 seconds)">
+          Restart (hold 2s)
+        </button>
+      </section>
+
+      <section id="idle-overlay" class="overlay hidden" aria-live="polite">
+        <p>Taking a quiet pause.</p>
+      </section>
+
+      <section id="end-overlay" class="overlay hidden" aria-live="polite">
+        <div class="end-card">
+          <p>Session ended. Take a break.</p>
+          <button id="end-restart-btn" class="control hold-btn" type="button" aria-label="Restart session (hold for 2 seconds)">
+            Restart (hold 2s)
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,222 @@
+:root {
+  --bg-1: #fffaf7;
+  --bg-2: #f7fcff;
+  --bg-3: #faf7ff;
+  --panel: rgba(255, 255, 255, 0.72);
+  --panel-border: rgba(80, 88, 112, 0.2);
+  --text: #3f4b67;
+  --overlay: rgba(244, 248, 255, 0.88);
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overscroll-behavior: none;
+  overflow: hidden;
+  font-family: "Trebuchet MS", "Verdana", sans-serif;
+  background: linear-gradient(170deg, var(--bg-1) 0%, var(--bg-2) 52%, var(--bg-3) 100%);
+  color: var(--text);
+}
+
+#app {
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  touch-action: none;
+}
+
+#app.mouse-locked {
+  cursor: none;
+}
+
+#scene {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.object {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.bubble {
+  width: var(--size);
+  height: var(--size);
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.9), rgba(196, 232, 255, 0.38) 55%, rgba(166, 205, 255, 0.18));
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  animation: bubble-float var(--duration) ease-out forwards;
+}
+
+.balloon {
+  width: var(--size);
+  height: calc(var(--size) * 1.25);
+  border-radius: 50% 50% 48% 48%;
+  background: radial-gradient(circle at 35% 25%, rgba(255, 255, 255, 0.9), var(--color) 65%);
+  animation: balloon-drift var(--duration) ease-out forwards;
+}
+
+.balloon::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 98%;
+  width: 1px;
+  height: calc(var(--size) * 0.85);
+  background: rgba(145, 153, 178, 0.5);
+}
+
+@keyframes bubble-float {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0;
+  }
+
+  15% {
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: translate3d(0, var(--rise), 0);
+    opacity: 0;
+  }
+}
+
+@keyframes balloon-drift {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+    opacity: 0;
+  }
+
+  15% {
+    opacity: 0.95;
+  }
+
+  100% {
+    transform: translate3d(var(--drift), var(--rise), 0) rotate(var(--tilt));
+    opacity: 0;
+  }
+}
+
+#parent-panel {
+  position: absolute;
+  top: env(safe-area-inset-top, 0.5rem);
+  right: max(0.5rem, env(safe-area-inset-right, 0.5rem));
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.35rem;
+  padding: 0.5rem;
+  border-radius: 0.75rem;
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  backdrop-filter: blur(4px);
+}
+
+.panel-label {
+  margin: 0;
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.control {
+  border: 1px solid rgba(85, 95, 120, 0.25);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.85);
+  color: #3f4b67;
+  font-size: 0.72rem;
+  line-height: 1;
+  padding: 0.45rem 0.7rem;
+  cursor: pointer;
+}
+
+.control:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.hold-btn.holding {
+  background: rgba(223, 241, 255, 0.95);
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  background: var(--overlay);
+  color: #48597a;
+  transition: opacity 0.9s ease;
+  opacity: 1;
+}
+
+.overlay p {
+  margin: 0;
+  font-size: clamp(0.95rem, 2.3vw, 1.2rem);
+}
+
+.end-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 0.85rem;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(83, 93, 118, 0.2);
+}
+
+.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.scene-faded #scene {
+  opacity: 0.45;
+  transition: opacity 1s ease;
+}
+
+.object.fade-away {
+  transition: opacity 0.7s ease;
+  opacity: 0;
+}
+
+@media (max-width: 680px) {
+  #parent-panel {
+    padding: 0.45rem;
+    gap: 0.3rem;
+  }
+
+  .control {
+    font-size: 0.68rem;
+    padding: 0.4rem 0.62rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .object {
+    animation-duration: 2.2s !important;
+  }
+
+  .overlay {
+    transition: none;
+  }
+}
